@@ -3,3 +3,13 @@
 **/.vs/
 **/*.user
 **/*.suo
+.superpowers/
+*.ipsw
+*.IPSW
+*.dmg
+*.qcow2
+*.img
+*.ticket
+*.shsh
+*.der
+vm-state/

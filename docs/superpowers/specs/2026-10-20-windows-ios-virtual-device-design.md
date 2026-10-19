@@ -21,8 +21,8 @@ The public GitHub repository and release should let technically capable users ob
 ## Approaches considered
 
 1. **Port vphone-cli directly.** Rejected as the primary path. It depends on Apple's Virtualization.framework and physical Apple Silicon hardware, so changing its front end cannot make it run on Windows x64.
-2. **Extend QEMU-based Darwin boot research.** Recommended. Existing work demonstrates selected iOS versions booting in QEMU to a root shell. Reuse its boot-chain and firmware preparation work where licensing permits, then investigate the device models and display/input/services needed for graphical iOS. This has the highest uncertainty but directly targets the requested host and outcome.
-3. **Ship the shell-only QEMU setup as the end product.** Rejected as the final product because it does not satisfy graphical iOS or app use. It may be an internal milestone and a useful early diagnostic artifact.
+2. **Extend the QEMU-based Inferno iPhone machine.** Recommended. Inferno already models Apple ARM iPhone hardware and has a graphical display/input path. Its iOS 26 compatibility work is active and not yet a stable user release. An unofficial front end publishes Windows/WSL2 bundles, but its own release notes say those builds have not been tested on real Windows. Reuse only published source, preserve GPL/AGPL notices and obligations, and build a separate user-friendly Windows setup/release around the QEMU backend. This avoids reimplementing the whole Apple device model while keeping the requested Windows x64 target.
+3. **Use darwin-vm as the primary base.** Rejected for the graphical product. It demonstrates recent iOS kernels booting under QEMU across host architectures, but its stated endpoint is a root shell and it requires a Mac for firmware preparation. Keep it as a reference for the modern boot chain, not the primary GUI emulator.
 
 ## Proposed architecture
 
@@ -32,7 +32,7 @@ A small Windows x64 launcher guides the user through prerequisites, downloads/va
 
 ### 2. QEMU device backend
 
-Use a controlled QEMU fork or an upstreamable QEMU extension. Keep the emulated iPhone machine configuration and devices behind a documented profile. The work is incremental: start with the known iOS boot path, then add the minimum hardware/services needed to reach the graphical interface. The exact display, input, storage, networking, audio, and secure-processor model is an open research risk; do not claim parity before evidence.
+Start from the public ChefKiss Inferno QEMU fork and its iPhone 11 / T8030 machine model, then isolate Windows-specific build, firmware preparation, and user-interface work in this project. First reproduce a published guest configuration. Next bring the current iOS 26 support work to a repeatable state using only public source and lawful firmware inputs. Then verify the display and touch/input path through SpringBoard. Do not copy code from unreleased/private projects or claim parity before observable evidence.
 
 ### 3. Firmware preparation
 
@@ -50,8 +50,10 @@ After the target machine has passed acceptance, publish source, Windows x64 rele
 
 ### M0 — Host and source baseline
 
-- Capture exact Windows build, CPU, memory, GPU, free disk, virtualization state, and available QEMU/WSL environment.
-- Select a reusable upstream base after source/license review.
+- Current host: Windows 11 Pro x64 build 26200, AMD Ryzen 7 6800H (8 cores / 16 threads), 16 GB installed RAM (15.3 GB visible), NVIDIA GeForce RTX 3060 Laptop GPU with 6 GB VRAM, hardware virtualization enabled, Ubuntu 26.04 under WSL2 installed, approximately 217 GB free on C:. No `qemu-system-aarch64` executable is currently on Windows PATH.
+- Primary codebase candidate: ChefKiss Inferno, a QEMU derivative with an Apple iPhone machine model and active iOS 26 compatibility work. Its QEMU changes are GPLv3 and its project code AGPLv3; publication requires a compatible license and source/notices.
+- Reference candidate: jprx/darwin-vm proves newer Darwin boot research can run on non-ARM QEMU hosts, but currently targets a root shell and its file preparation requires macOS.
+- Confirm the exact public Inferno revision, Windows/WSL2 build path, and supported iPhone 11/iOS 26 pairing before implementation.
 - Confirm how supported iOS 26 firmware is obtained and prepared without redistribution.
 
 ### M1 — Reproducible build and boot research prototype
@@ -86,6 +88,14 @@ After the target machine has passed acceptance, publish source, Windows x64 rele
 - Review the licenses of any QEMU fork, patches, scripts, and third-party components before publication; preserve required notices and source obligations.
 - Avoid misleading claims such as “everything works” until features have been individually verified.
 - Keep the project independent of Apple and clearly label it as unofficial.
+
+## Research evidence captured 2026-10-20
+
+- Inferno issue [#268: iOS 16-27 support](https://github.com/ChefKissInc/Inferno/issues/268) remains in progress. The maintainer reported on 2026-10-11 that prerequisites were complete but some work was not pushed; iOS 27 still failed during restore.
+- Inferno discussion [#312](https://github.com/ChefKissInc/Inferno/discussions/312) includes an independent Windows 11 attempt and reports the maintainer had iOS 26 working privately but did not consider the emulator/tools ready for release. Treat this as feasibility evidence, not a reproducible public build.
+- Inferno identifies itself as a QEMU derivative and specifies GPLv3 for the overall project and AGPLv3 for its own code. Its branding has separate restrictions; any downstream project must review them before choosing a name or publishing binaries.
+- [darwin-vm](https://github.com/jprx/darwin-vm) supports modern iPhone SoC boot research and non-ARM hosts, but advertises a root shell rather than SpringBoard.
+- QEMU's [TCG documentation](https://www.qemu.org/docs/master/about/emulation.html) confirms cross-architecture system emulation is supported in principle; that does not establish that the iPhone devices, iOS 26 boot chain, or GUI work on Windows.
 
 ## Main technical risks
 

@@ -3,6 +3,7 @@
 **/.vs/
 **/*.user
 **/*.suo
+**/__pycache__/
 .superpowers/
 *.ipsw
 *.IPSW

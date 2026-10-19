@@ -37,6 +37,8 @@ def get_firmware(device: str, version: str) -> dict:
 def content_length(url: str) -> int:
     request = Request(url, method="HEAD", headers={"User-Agent": "PocketDarwin/0.1"})
     with urlopen(request, timeout=30) as response:
+        if urlparse(response.geturl()).hostname != "updates.cdn-apple.com":
+            raise RuntimeError("Apple firmware request redirected outside Apple's update CDN")
         length = response.headers.get("Content-Length")
     if not length or not length.isdigit():
         raise RuntimeError("Apple CDN did not provide a valid Content-Length")
@@ -55,6 +57,8 @@ def download_chunk(url: str, fd: int, start: int, end: int, total: int) -> None:
         )
         try:
             with urlopen(request, timeout=120) as response:
+                if urlparse(response.geturl()).hostname != "updates.cdn-apple.com":
+                    raise RuntimeError("Apple firmware request redirected outside Apple's update CDN")
                 content_range = response.headers.get("Content-Range", "")
                 if response.status != 206 or content_range != f"bytes {start}-{end}/{total}":
                     raise RuntimeError(f"Unexpected range response for bytes {start}-{end}: {content_range!r}")

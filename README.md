@@ -26,6 +26,13 @@ python3 scripts/linux/download_ipsw.py \
 
 The downloader rejects non-Apple firmware hosts and checks the completed file against the catalog SHA-256. The catalog currently lists this iOS 26 build as unsigned for iPhone 11. A downloaded IPSW is only a research input; it does not provide a restore ticket or mean the guest can boot.
 
+After the download finishes, inspect the iPhone 11 restore identities and firmware paths without unpacking the entire archive:
+
+```bash
+python3 scripts/linux/inspect_ipsw.py \
+  "$HOME/.local/share/PocketDarwin/firmware/iPhone12,1_26.6.2.ipsw"
+```
+
 ## Build the backend in WSL2 Ubuntu
 
 Install the build dependencies in Ubuntu/WSL2, then run:

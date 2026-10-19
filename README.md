@@ -13,6 +13,19 @@ PocketDarwin is a Windows 11 x64 launcher and build workflow for investigating a
 - iOS 26 restore, SpringBoard graphics, touch input, and native app launch have **not** been verified by this project.
 - Do not treat this repository as a working iOS emulator or release build.
 
+## iOS 26 firmware research input
+
+To fetch the iPhone 11 iOS 26.6.2 IPSW from Apple's update CDN into a private folder outside this repository:
+
+```bash
+python3 scripts/linux/download_ipsw.py \
+  --device iPhone12,1 \
+  --version 26.6.2 \
+  --output "$HOME/.local/share/PocketDarwin/firmware/iPhone12,1_26.6.2.ipsw"
+```
+
+The downloader rejects non-Apple firmware hosts and checks the completed file against the catalog SHA-256. The catalog currently lists this iOS 26 build as unsigned for iPhone 11. A downloaded IPSW is only a research input; it does not provide a restore ticket or mean the guest can boot.
+
 ## Build the backend in WSL2 Ubuntu
 
 Install the build dependencies in Ubuntu/WSL2, then run:

@@ -20,4 +20,12 @@ if output=$(bash "$SCRIPT" --lock "$tmp/bad.json" --prefix "$tmp/out" --validate
 fi
 grep -q 'ERROR: BACKEND_LOCK_INVALID' <<< "$output"
 
+mkdir -p "$tmp/bin"
+ln -s "$(command -v python3)" "$tmp/bin/python3"
+if output=$(PATH="$tmp/bin" /bin/bash "$SCRIPT" --lock "$LOCK" --prefix "$tmp/out" 2>&1); then
+  echo "missing build tools unexpectedly accepted" >&2
+  exit 1
+fi
+grep -q 'ERROR: TOOL_MISSING: curl' <<< "$output"
+
 echo "build backend tests passed"

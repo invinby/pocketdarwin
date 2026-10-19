@@ -28,13 +28,22 @@ def main() -> int:
     try:
         with zipfile.ZipFile(args.ipsw) as archive:
             build = read_plist(archive, "BuildManifest.plist")
-            info = read_plist(archive, "Info.plist")
+            try:
+                info = read_plist(archive, "Info.plist")
+            except RuntimeError:
+                # Some IPSWs omit Info.plist; BuildManifest has equivalent
+                # version/build metadata and the supported product list.
+                info = {}
     except zipfile.BadZipFile as exc:
         raise SystemExit(f"ERROR: IPSW is not a valid ZIP archive: {exc}") from exc
 
+    product_types = info.get("SupportedProductTypes") or build.get("SupportedProductTypes") or []
     product_type = info.get("ProductType") or build.get("ProductType")
-    if product_type != args.device:
+    if product_type is not None and product_type != args.device:
         raise SystemExit(f"ERROR: wrong device: expected {args.device}, found {product_type!r}")
+    if product_type is None and args.device not in product_types:
+        raise SystemExit(f"ERROR: wrong device: expected {args.device}, found {product_types!r}")
+    product_type = product_type or args.device
 
     identities = []
     for identity in build.get("BuildIdentities", []):
@@ -64,8 +73,8 @@ def main() -> int:
     result = {
         "ipsw": str(args.ipsw.resolve()),
         "product_type": product_type,
-        "product_version": info.get("ProductVersion"),
-        "build_version": info.get("ProductBuildVersion"),
+        "product_version": info.get("ProductVersion") or build.get("ProductVersion"),
+        "build_version": info.get("ProductBuildVersion") or build.get("ProductBuildVersion"),
         "identity_count": len(identities),
         "identities": identities,
     }

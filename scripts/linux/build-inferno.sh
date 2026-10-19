@@ -93,8 +93,14 @@ for row in "${FIELDS[@]:2}"; do
   printf '%s\n' "$module_commit" > "$marker"
 done
 
+SCRIPT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+PATCH_FILE="$SCRIPT_ROOT/patches/inferno/0001-link-hogweed-for-t8030.patch"
+if ! grep -q "if_true: hogweed" "$SRC_DIR/hw/arm/apple-silicon/meson.build"; then
+  git -C "$SRC_DIR" apply "$PATCH_FILE"
+fi
+
 cd "$BUILD_DIR"
-"$SRC_DIR/configure" --prefix="$PREFIX/install" --target-list=aarch64-softmmu --enable-sdl --enable-slirp --enable-virtfs --disable-werror
+"$SRC_DIR/configure" --prefix="$PREFIX/install" --target-list=aarch64-softmmu --enable-sdl --enable-slirp --enable-virtfs --enable-nettle --disable-werror
 ninja -C "$BUILD_DIR" -j "$NINJA_JOBS"
 ninja -C "$BUILD_DIR" -j "$NINJA_JOBS" install
 binary="$PREFIX/install/bin/qemu-system-aarch64"

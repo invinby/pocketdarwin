@@ -8,3 +8,4 @@ Task 1: Ruling: WPF project file is created in Task 1 and modified in Task 6, no
 Task 1: Ruling: User authorized pursuing implementation in this main checkout by requesting autonomous end-to-end execution — no separate branch needed.
 Task 1: Ruling: Goal and publication must be evidence-led; if the public backend cannot boot iOS 26 GUI, repository will state the concrete limit rather than claim launch.
 Task 1: partial implementation committed (host preflight + 2 xUnit cases; suite 2/2 pass). Actual Ubuntu/WSLg confirmed live with wayland-0 and :0; remaining planned distro/localization/low-disk cases and visible WPF screen are not complete.
+Task 6: Ruling: Built the read-only Windows status screen before CLI guest boot because it depends only on Task 1 and gives a concrete user-visible artifact while WSL package installation waits for local sudo authentication; cost if wrong: UI may need redesign after the runtime flow is proven.

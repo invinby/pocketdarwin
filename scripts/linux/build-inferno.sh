@@ -38,8 +38,26 @@ if data["repository"] != "https://github.com/ChefKissInc/Inferno.git":
 if not isinstance(data.get("submodules"), list):
     print("ERROR: BACKEND_LOCK_INVALID: submodules must be a list", file=sys.stderr)
     raise SystemExit(2)
+seen = set()
+for module in data["submodules"]:
+    if not isinstance(module, dict):
+        print("ERROR: BACKEND_LOCK_INVALID: submodule entry must be an object", file=sys.stderr)
+        raise SystemExit(2)
+    path, repo, sha, archive = (module.get(k) for k in ("path", "repository", "commit", "archive_url"))
+    if not all(isinstance(value, str) and value for value in (path, repo, sha, archive)):
+        print("ERROR: BACKEND_LOCK_INVALID: submodule fields missing", file=sys.stderr)
+        raise SystemExit(2)
+    if path.startswith("/") or ".." in path.split("/") or not re.fullmatch(r"[A-Za-z0-9._/-]+", path):
+        print("ERROR: BACKEND_LOCK_INVALID: unsafe submodule path", file=sys.stderr)
+        raise SystemExit(2)
+    if path in seen or not re.fullmatch(r"[0-9a-f]{40}", sha) or not archive.startswith("https://"):
+        print("ERROR: BACKEND_LOCK_INVALID: invalid submodule pin", file=sys.stderr)
+        raise SystemExit(2)
+    seen.add(path)
 print(data["commit"])
 print(data["source_url"])
+for module in data["submodules"]:
+    print("\t".join((module["path"], module["repository"], module["commit"], module["archive_url"])))
 PY
 )
 mapfile -t FIELDS <<< "$FIELDS_OUTPUT"
@@ -63,6 +81,17 @@ if [[ ! -d "$SRC_DIR" ]]; then
   mkdir -p "$SRC_DIR"
   tar -xzf "$archive" --strip-components=1 -C "$SRC_DIR"
 fi
+for row in "${FIELDS[@]:2}"; do
+  IFS=$'\t' read -r module_path module_repository module_commit module_archive_url <<< "$row"
+  module_dir="$SRC_DIR/$module_path"
+  marker="$module_dir/.pocketdarwin-commit"
+  if [[ -f "$marker" ]] && [[ "$(cat "$marker")" == "$module_commit" ]]; then continue; fi
+  mkdir -p "$module_dir"
+  archive="$PREFIX/cache/submodule-$module_commit.tar.gz"
+  curl --fail --location --retry 3 "$module_archive_url" --output "$archive"
+  tar -xzf "$archive" --strip-components=1 -C "$module_dir"
+  printf '%s\n' "$module_commit" > "$marker"
+done
 
 cd "$BUILD_DIR"
 "$SRC_DIR/configure" --prefix="$PREFIX/install" --target-list=aarch64-softmmu --enable-sdl --enable-slirp --enable-virtfs --disable-werror

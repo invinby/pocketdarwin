@@ -7,6 +7,8 @@ LOCK="$ROOT/config/backend.lock.json"
 
 grep -q '"commit": "cc4302a99167abec69b714cfd00c38caece7e7de"' "$LOCK"
 grep -q '"repository": "https://github.com/ChefKissInc/Inferno.git"' "$LOCK"
+grep -q '"path":"util/mlib"' "$LOCK"
+grep -q '"commit":"d0fd65a8695218ffabf2aa543ce51ca3af69536f"' "$LOCK"
 bash "$SCRIPT" --lock "$LOCK" --prefix /tmp/pocketdarwin-test --validate-lock
 
 tmp=$(mktemp -d)

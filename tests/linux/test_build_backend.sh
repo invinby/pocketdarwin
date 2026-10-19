@@ -5,10 +5,9 @@ ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 SCRIPT="$ROOT/scripts/linux/build-inferno.sh"
 LOCK="$ROOT/config/backend.lock.json"
 
-grep -q '"commit": "cc4302a99167abec69b714cfd00c38caece7e7de"' "$LOCK"
+grep -q '"commit": "6541861f4d033a0de327b5ccc5180ebac20bf461"' "$LOCK"
 grep -q '"repository": "https://github.com/ChefKissInc/Inferno.git"' "$LOCK"
-grep -q '"path":"util/mlib"' "$LOCK"
-grep -q '"commit":"d0fd65a8695218ffabf2aa543ce51ca3af69536f"' "$LOCK"
+grep -q '"submodules": \[\]' "$LOCK"
 bash "$SCRIPT" --lock "$LOCK" --prefix /tmp/pocketdarwin-test --validate-lock
 
 tmp=$(mktemp -d)

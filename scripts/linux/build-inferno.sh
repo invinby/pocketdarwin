@@ -66,7 +66,7 @@ SOURCE_URL="${FIELDS[1]}"
 echo "Backend lock valid: ChefKissInc/Inferno @ $COMMIT"
 [[ "$VALIDATE_ONLY" == true ]] && exit 0
 
-for tool in curl tar make gcc g++ ninja pkg-config; do
+for tool in curl tar make gcc g++ ninja pkg-config meson; do
   command -v "$tool" >/dev/null || { echo "ERROR: TOOL_MISSING: $tool" >&2; exit 3; }
 done
 NINJA_JOBS=${NINJA_JOBS:-4}
@@ -95,14 +95,20 @@ done
 
 SCRIPT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 PATCH_FILE="$SCRIPT_ROOT/patches/inferno/0001-link-hogweed-for-t8030.patch"
-if ! grep -q "if_true: hogweed" "$SRC_DIR/hw/arm/apple-silicon/meson.build"; then
+if [[ -f "$SRC_DIR/hw/arm/apple-silicon/meson.build" ]] && ! grep -q "if_true: hogweed" "$SRC_DIR/hw/arm/apple-silicon/meson.build"; then
   git -C "$SRC_DIR" apply "$PATCH_FILE"
 fi
 
-cd "$BUILD_DIR"
-"$SRC_DIR/configure" --prefix="$PREFIX/install" --target-list=aarch64-softmmu --enable-sdl --enable-slirp --enable-virtfs --enable-nettle --disable-werror
-ninja -C "$BUILD_DIR" -j "$NINJA_JOBS"
-ninja -C "$BUILD_DIR" -j "$NINJA_JOBS" install
+if [[ -x "$SRC_DIR/configure" ]]; then
+  cd "$BUILD_DIR"
+  "$SRC_DIR/configure" --prefix="$PREFIX/install" --target-list=aarch64-softmmu --enable-sdl --enable-slirp --enable-virtfs --enable-nettle --disable-werror
+  ninja -C "$BUILD_DIR" -j "$NINJA_JOBS"
+  ninja -C "$BUILD_DIR" -j "$NINJA_JOBS" install
+else
+  meson setup "$BUILD_DIR" "$SRC_DIR" -Dprefix="$PREFIX/install" -Dsdl=enabled -Dslirp=enabled -Dwerror=false
+  meson compile -C "$BUILD_DIR" -j "$NINJA_JOBS"
+  meson install -C "$BUILD_DIR"
+fi
 binary="$PREFIX/install/bin/qemu-system-aarch64"
 [[ -x "$binary" ]] || { echo "ERROR: BUILD_OUTPUT_MISSING: $binary" >&2; exit 4; }
 "$binary" -machine help > "$PREFIX/machine-list.txt"

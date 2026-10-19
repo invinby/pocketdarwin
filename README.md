@@ -7,8 +7,8 @@ PocketDarwin is a Windows 11 x64 launcher and build workflow for investigating a
 ## Current status
 
 - The WPF launcher checks Windows, WSL2, Ubuntu, and WSLg.
-- The backend lock pins ChefKiss Inferno to commit `cc4302a99167abec69b714cfd00c38caece7e7de`.
-- The pinned Inferno backend compiled and installed successfully in Ubuntu 26.04 under WSL2 on the first target Windows PC.
+- The backend lock pins the public Inferno `dev` branch snapshot to commit `6541861f4d033a0de327b5ccc5180ebac20bf461`.
+- That pinned development backend compiled successfully in Ubuntu 26.04 under WSL2 on the first target Windows PC.
 - The resulting binary reports the `t8030` (iPhone 11) machine and includes the SDL display backend. This confirms the emulator backend build and host display support only.
 - iOS 26 restore, SpringBoard graphics, touch input, and native app launch have **not** been verified by this project.
 - Do not treat this repository as a working iOS emulator or release build.

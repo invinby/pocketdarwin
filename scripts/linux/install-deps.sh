@@ -23,7 +23,8 @@ packages=(
   build-essential libtool meson ninja-build pkg-config device-tree-compiler
   libglib2.0-dev gnutls-bin libpng-dev libslirp-dev libssh-dev libusb-1.0-0-dev
   liblzo2-dev libncurses-dev libpixman-1-dev libsnappy-dev vde2 zstd libzstd-dev
-  libgnutls28-dev libgmp-dev libnettle-dev liblzfse-dev libgtk-3-dev libsdl2-dev git cmake
+  libgnutls28-dev libgmp-dev libnettle-dev liblz4-dev libavahi-glib-dev
+  liblzfse-dev libgtk-3-dev libsdl2-dev git cmake
   python3 python3-venv curl wget unzip libssl-dev libattr1-dev cloud-image-utils
   xorriso openssh-client xz-utils libjpeg-turbo8-dev
 )

@@ -86,6 +86,7 @@ After the target machine has passed acceptance, publish source, Windows x64 rele
 - Do not ask users to provide Apple ID credentials to the launcher.
 - Use checksums and explicit source/version reporting for firmware inputs.
 - Review the licenses of any QEMU fork, patches, scripts, and third-party components before publication; preserve required notices and source obligations.
+- Before publishing binaries or user instructions that download and boot iOS on non-Apple PC hardware, review the current iOS 26 license and applicable local law with qualified counsel. Apple's license text grants use on a single Apple-branded device and restricts modification/reverse engineering, subject to stated exceptions; downloading firmware from Apple does not by itself resolve whether this project or a user's use is permitted. Do not represent an unofficial disclaimer as permission from Apple.
 - Avoid misleading claims such as “everything works” until features have been individually verified.
 - Keep the project independent of Apple and clearly label it as unofficial.
 
@@ -96,6 +97,7 @@ After the target machine has passed acceptance, publish source, Windows x64 rele
 - The current [iPhone-VM README](https://github.com/UltraFEmotes/iPhone-VM/blob/main/README.md) and [v0.4.0 release](https://github.com/UltraFEmotes/iPhone-VM/releases/tag/v0.4.0-experimental) provide a reference Windows/WSL2 installer, but state that Windows runtime coverage is experimental and the frontend has only been tested on one Apple Silicon Mac. The guest is software-emulated and has no guest Metal/AGX acceleration.
 - Inferno's Windows Q&A [#212](https://github.com/ChefKissInc/Inferno/discussions/212) says firmware filesystem patching needs macOS or an experimental APFS driver on Linux/WSL2. A Mac-free WSL setup is therefore a required early validation item, not an assumed feature.
 - The current WSL2 instance has 16 logical CPUs and about 7.4 GiB available to Linux at idle. The Windows host has 16 GB RAM total, so memory allocation and software-emulation speed need measurement before defining other users' minimum specs.
+- Apple's current [iOS 26 software license](https://www.apple.com/legal/sla/docs/iOS26_iPadOS26.pdf) describes a limited license to use Apple software on one Apple-branded device and restricts modification/reverse engineering, subject to its terms and legal exceptions. This is a release diligence item, not a legal determination about a particular user's use or jurisdiction.
 - Inferno identifies itself as a QEMU derivative and specifies GPLv3 for the overall project and AGPLv3 for its own code. Its branding has separate restrictions; any downstream project must review them before choosing a name or publishing binaries.
 - [darwin-vm](https://github.com/jprx/darwin-vm) supports modern iPhone SoC boot research and non-ARM hosts, but advertises a root shell rather than SpringBoard.
 - QEMU's [TCG documentation](https://www.qemu.org/docs/master/about/emulation.html) confirms cross-architecture system emulation is supported in principle; that does not establish that the iPhone devices, iOS 26 boot chain, or GUI work on Windows.

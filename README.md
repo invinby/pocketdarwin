@@ -1,6 +1,6 @@
 # PocketDarwin
 
-**Early research build. This project does not boot iOS yet.**
+**Early research build. The QEMU backend builds on this host; this project does not boot iOS yet.**
 
 PocketDarwin is a Windows 11 x64 launcher and build workflow for investigating a real iPhone guest in QEMU under WSL2. The current checkpoint contains a Windows host-status window and a pinned build script for the public ChefKiss Inferno source. No iOS firmware, restore image, signing ticket, or private key is included.
 
@@ -8,7 +8,8 @@ PocketDarwin is a Windows 11 x64 launcher and build workflow for investigating a
 
 - The WPF launcher checks Windows, WSL2, Ubuntu, and WSLg.
 - The backend lock pins ChefKiss Inferno to commit `cc4302a99167abec69b714cfd00c38caece7e7de`.
-- The Linux build script and lock-validation checks are experimental.
+- The pinned Inferno backend compiled and installed successfully in Ubuntu 26.04 under WSL2 on the first target Windows PC.
+- The resulting binary reports the `t8030` (iPhone 11) machine and includes the SDL display backend. This confirms the emulator backend build and host display support only.
 - iOS 26 restore, SpringBoard graphics, touch input, and native app launch have **not** been verified by this project.
 - Do not treat this repository as a working iOS emulator or release build.
 

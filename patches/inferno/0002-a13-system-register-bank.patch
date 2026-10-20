@@ -1,0 +1,90 @@
+diff --git a/hw/arm/apple-silicon/a13.c b/hw/arm/apple-silicon/a13.c
+index 6a6116c..a128334 100644
+--- a/hw/arm/apple-silicon/a13.c
++++ b/hw/arm/apple-silicon/a13.c
+@@ -40,6 +40,9 @@
+ #define VMSTATE_A13_CPREG(name) \
+     VMSTATE_UINT64(A13_CPREG_VAR_NAME(name), AppleA13State)
+ 
++#define VMSTATE_A13_CPREG_V(name, version) \
++    VMSTATE_UINT64_V(A13_CPREG_VAR_NAME(name), AppleA13State, version)
++
+ #define VMSTATE_A13_CLUSTER_CPREG(name) \
+     VMSTATE_UINT64(A13_CPREG_VAR_NAME(name), AppleA13Cluster)
+ 
+@@ -542,6 +545,20 @@ static const ARMCPRegInfo apple_a13_cp_reginfo_tcg[] = {
+     A13_CPREG_DEF(IMP_BARRIER_LBSY_BST_SYNC_W1_EL0, 3, 3, 15, 15, 1, PL1_RW, 0),
+     A13_CPREG_DEF(PMC0, 3, 2, 15, 0, 0, PL1_RW, 0),
+     A13_CPREG_DEF(PMC1, 3, 2, 15, 1, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C2_0, 3, 2, 15, 2, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C3_0, 3, 2, 15, 3, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C4_0, 3, 2, 15, 4, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C5_0, 3, 2, 15, 5, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C6_0, 3, 2, 15, 6, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C7_0, 3, 2, 15, 7, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C8_0, 3, 2, 15, 8, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C9_0, 3, 2, 15, 9, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C10_0, 3, 2, 15, 10, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C11_0, 3, 2, 15, 11, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C12_0, 3, 2, 15, 12, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C13_0, 3, 2, 15, 13, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C14_0, 3, 2, 15, 14, 0, PL1_RW, 0),
++    A13_CPREG_DEF(S3_2_C15_C15_0, 3, 2, 15, 15, 0, PL1_RW, 0),
+     A13_CPREG_DEF(PMCR0, 3, 1, 15, 0, 0, PL1_RW, 0),
+     A13_CPREG_DEF(PMCR1, 3, 1, 15, 1, 0, PL1_RW, 0),
+     A13_CPREG_DEF(PMSR, 3, 1, 15, 13, 0, PL1_RW, 0),
+@@ -763,7 +780,7 @@ static const Property apple_a13_cluster_properties[] = {
+ 
+ static const VMStateDescription vmstate_apple_a13 = {
+     .name = "AppleA13State",
+-    .version_id = 1,
++    .version_id = 2,
+     .minimum_version_id = 1,
+     .fields =
+         (const VMStateField[]){
+@@ -793,6 +810,20 @@ static const VMStateDescription vmstate_apple_a13 = {
+             VMSTATE_A13_CPREG(IMP_BARRIER_LBSY_BST_SYNC_W1_EL0),
+             VMSTATE_A13_CPREG(PMC0),
+             VMSTATE_A13_CPREG(PMC1),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C2_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C3_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C4_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C5_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C6_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C7_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C8_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C9_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C10_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C11_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C12_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C13_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C14_0, 2),
++            VMSTATE_A13_CPREG_V(S3_2_C15_C15_0, 2),
+             VMSTATE_A13_CPREG(PMCR0),
+             VMSTATE_A13_CPREG(PMCR1),
+             VMSTATE_A13_CPREG(PMSR),
+diff --git a/include/hw/arm/apple-silicon/a13.h b/include/hw/arm/apple-silicon/a13.h
+index 590eaab..e7d0c26 100644
+--- a/include/hw/arm/apple-silicon/a13.h
++++ b/include/hw/arm/apple-silicon/a13.h
+@@ -90,6 +90,20 @@ typedef struct AppleA13State {
+     A13_CPREG_VAR_DEF(IMP_BARRIER_LBSY_BST_SYNC_W1_EL0);
+     A13_CPREG_VAR_DEF(PMC0);
+     A13_CPREG_VAR_DEF(PMC1);
++    A13_CPREG_VAR_DEF(S3_2_C15_C2_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C3_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C4_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C5_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C6_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C7_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C8_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C9_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C10_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C11_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C12_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C13_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C14_0);
++    A13_CPREG_VAR_DEF(S3_2_C15_C15_0);
+     A13_CPREG_VAR_DEF(PMCR0);
+     A13_CPREG_VAR_DEF(PMCR1);
+     A13_CPREG_VAR_DEF(PMSR);

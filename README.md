@@ -1,16 +1,17 @@
 # PocketDarwin
 
-**Early research build. The QEMU backend builds on this host; this project does not boot iOS yet.**
+**Early research build. The iOS 26 kernel reaches `launchd`, then panics before SpringBoard.**
 
 PocketDarwin is a Windows 11 x64 launcher and build workflow for investigating a real iPhone guest in QEMU under WSL2. The current checkpoint contains a Windows host-status window and a pinned build script for the public ChefKiss Inferno source. No iOS firmware, restore image, signing ticket, or private key is included.
 
 ## Current status
 
 - The WPF launcher checks Windows, WSL2, Ubuntu, and WSLg.
-- The backend lock pins the public Inferno `dev` branch snapshot to commit `6541861f4d033a0de327b5ccc5180ebac20bf461`.
-- That pinned development backend compiled successfully in Ubuntu 26.04 under WSL2 on the first target Windows PC.
-- The resulting binary reports the `t8030` (iPhone 11) machine and includes the SDL display backend. This confirms the emulator backend build and host display support only.
-- iOS 26 restore, SpringBoard graphics, touch input, and native app launch have **not** been verified by this project.
+- The backend lock pins public Inferno commit `cc4302a99167abec69b714cfd00c38caece7e7de`.
+- PocketDarwin carries a small A13 system-register patch series for registers that the iOS 26 kernel writes during early boot but the upstream model did not define.
+- With that patch, the iOS kernel initializes the T8030 display and NVMe drivers, mounts the System APFS volume, and starts `launchd` under WSL2/TCG.
+- The guest then panics because the System volume cannot find `/usr/lib/libSystem.B.dylib` in a dyld shared cache. The matching cache is in the separate iOS 26 Cryptex1 image and is not yet mounted by the guest boot flow.
+- The captured display is black; SpringBoard, touch input, and app launch are **not** verified. This repository is still a research prototype, not a working iOS emulator release.
 - Do not treat this repository as a working iOS emulator or release build.
 
 ## iOS 26 firmware research input
@@ -24,7 +25,7 @@ python3 scripts/linux/download_ipsw.py \
   --output "$HOME/.local/share/PocketDarwin/firmware/iPhone12,1_26.6.2.ipsw"
 ```
 
-The downloader rejects non-Apple firmware hosts and checks the completed file against the catalog SHA-256. The catalog currently lists this iOS 26 build as unsigned for iPhone 11. A downloaded IPSW is only a research input; it does not provide a restore ticket or mean the guest can boot.
+The downloader rejects non-Apple firmware hosts and checks the completed file against the catalog SHA-256. The catalog currently lists this iOS 26 build as unsigned for iPhone 11. A downloaded IPSW is only a research input; it does not provide a restore ticket or mean the guest can boot. The extracted System image and Cryptex1 remain in a private folder outside this repository.
 
 After the download finishes, inspect the iPhone 11 restore identities and firmware paths without unpacking the entire archive:
 
@@ -56,7 +57,7 @@ dotnet run --project src/launcher/PocketDarwin.Launcher/PocketDarwin.Launcher.cs
 
 ## Upstream and limitations
 
-PocketDarwin uses the public [ChefKiss Inferno](https://github.com/ChefKissInc/Inferno) QEMU fork as its research backend. Inferno's own compatibility notes and issues are the source of truth for supported device and iOS pairings. iOS 26 compatibility remains experimental upstream; PocketDarwin will only claim a version after a repeatable boot is observed on Windows/WSL2.
+PocketDarwin uses the public [ChefKiss Inferno](https://github.com/ChefKissInc/Inferno) QEMU fork as its research backend. Inferno's own compatibility notes and issues are the source of truth for supported device and iOS pairings. The current checkpoint proves kernel-to-launchd progress only. PocketDarwin will only claim a working iOS version after the SpringBoard interface is repeatedly observed on Windows/WSL2.
 
 ## License
 

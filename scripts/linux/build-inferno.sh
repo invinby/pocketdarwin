@@ -98,6 +98,10 @@ PATCH_FILE="$SCRIPT_ROOT/patches/inferno/0001-link-hogweed-for-t8030.patch"
 if [[ -f "$SRC_DIR/hw/arm/apple-silicon/meson.build" ]] && ! grep -q "if_true: hogweed" "$SRC_DIR/hw/arm/apple-silicon/meson.build"; then
   git -C "$SRC_DIR" apply "$PATCH_FILE"
 fi
+PATCH_FILE="$SCRIPT_ROOT/patches/inferno/0002-a13-system-register-bank.patch"
+if [[ -f "$SRC_DIR/hw/arm/apple-silicon/a13.c" ]] && ! grep -q "A13_CPREG_DEF(S3_2_C15_C2_0" "$SRC_DIR/hw/arm/apple-silicon/a13.c"; then
+  git -C "$SRC_DIR" apply "$PATCH_FILE"
+fi
 
 if [[ -x "$SRC_DIR/configure" ]]; then
   cd "$BUILD_DIR"

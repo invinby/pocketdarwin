@@ -12,6 +12,8 @@ That let the kernel continue past an early panic caused by unsupported A13 syste
 
 The latest boot ends in a kernel panic because PID 1 cannot load `/usr/lib/libSystem.B.dylib`: the System container has no dyld shared cache. The matching cache fragments are present in the separate decrypted Cryptex1 APFS image from the IPSW, but the current Inferno boot path has not installed or mounted that Cryptex. The QEMU screen capture is black. SpringBoard, touch input, and app launch are still unverified.
 
+A follow-up probe attached the Cryptex1 image as NVMe namespace 7 with namespace type 7. iOS enumerated it, then `AppleEmbeddedNVMeController::CreateEmbeddedBlockDevice` rejected that type as a critical device and the guest panicked in the NVMe controller teardown path. This namespace type is not a valid Cryptex transport; the test script and scratch disk are local-only and are not part of the release. The public Inferno source has no Cryptex boot property or mount path, so the next experiment must use the actual restore/iBoot metadata flow rather than inventing another NVMe type.
+
 ## USB investigation
 
 The x86_64 companion QEMU with `usb-tcp-remote` and the ARM-side `usb-tcp-host` can establish their TCP connection on localhost port 8030. That validates the transport connection only.
@@ -22,14 +24,14 @@ The public Inferno discussion below identifies a missing software cable notifica
 
 ## Next technical gates
 
-1. Attach Cryptex1 through the correct device-tree/iBoot/restore layout so `launchd` can load its matching dyld cache and `libSystem`.
+1. Find and implement the correct Cryptex1 restore/iBoot attachment path so `launchd` can load its matching dyld cache and `libSystem`; arbitrary NVMe namespace type 7 has been ruled out.
 2. Continue normal boot through userspace and inspect the next panic or service failure without masking it with synthetic system files.
 3. Complete the restore/install path, including the required SEP/TSS inputs and USB companion transport, without putting firmware, tickets, keys, or extracted Apple binaries in this repository.
 4. Capture the real SpringBoard interface from the Windows host and verify touch input before packaging a user-facing launcher/release or claiming iOS 26 support.
 
 ## References
 
-- [Inferno Discussion #312: iOS 16 on Windows 11 and the USB cable notification issue](https://github.com/ChefKissInc/Inferno/discussions/312)
+- [Inferno Discussion #312: iOS on Windows, the USB cable notification issue, and unreleased iOS 26 work](https://github.com/ChefKissInc/Inferno/discussions/312)
 - [Inferno source: DWC3 USB device implementation](https://github.com/ChefKissInc/Inferno/blob/master/hw/usb/hcd-dwc3.c)
 - [Inferno source: Apple Type-C USB PHY model](https://github.com/ChefKissInc/Inferno/blob/master/hw/usb/apple_typec.c)
 

@@ -30,3 +30,5 @@ The public Inferno discussion below identifies a missing software cable notifica
 - [Inferno source: Apple Type-C USB PHY model](https://github.com/ChefKissInc/Inferno/blob/master/hw/usb/apple_typec.c)
 
 This file records a research checkpoint, not a working emulator claim.
+
+A follow-up probe redirected all four ARM UARTs to separate files; all remained empty. QEMU's guest-error log only records a write to an unsupported AArch64 system register (`op0:3 op1:2 crn:15 crm:2 op2:0`). This still does not establish how far the iOS kernel progressed.

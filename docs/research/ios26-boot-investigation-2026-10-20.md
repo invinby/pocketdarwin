@@ -36,3 +36,17 @@ The public Inferno discussion below identifies a missing software cable notifica
 - [Inferno source: Apple Type-C USB PHY model](https://github.com/ChefKissInc/Inferno/blob/master/hw/usb/apple_typec.c)
 
 This file records a research checkpoint, not a working emulator claim. The patch files make the A13 register experiment reproducible from the pinned public Inferno source. Firmware inputs and scratch disk images remain outside the repository.
+
+## RestoreRamDisk probe (2026-10-20)
+
+The IPSW Erase `RestoreRamDisk` was extracted and booted through Inferno's `boot-mode=enter_recovery` plus `-initrd`. The restore kernel boots the `rd=md0` APFS ramdisk, initializes the T8030 display/NVMe/USB stack, starts `launchd`, and launches Apple's `restored_external` service. This confirms the guest can reach Apple's real restore userspace; it is not a normal iOS boot and does not show SpringBoard.
+
+The restore service then exits back to recovery because there is no installed Update volume for ramdisk synchronization (`Unable to find update partition and data volume access is restricted`). The x86_64 companion Ubuntu VM already has `idevicerestore`, `usbmuxd`, and libimobiledevice installed, but after starting `usbmuxd`, `idevice_id -l` still reports no device and `lsusb` shows only root hubs. So the IPSW restore host cannot yet communicate with the emulated phone. The ARM QEMU uses the existing localhost USB TCP transport on port 8030; transport connection alone does not create the missing iOS USB cable-connect notification.
+
+This probe used snapshot mode for all NVMe scratch devices. Firmware, restore ramdisk, trust caches, ticket material, and disk images remain private and are not included here.
+
+### Updated gates
+
+1. Implement the missing Type-C/IOPort software cable-connect event so the guest's DWC3 gadget becomes visible to the companion Ubuntu VM.
+2. Use the companion's restore tools to perform the real IPSW restore and create the APFS volume group, Update/Data volumes, and system snapshot expected by iOS 26.
+3. Continue the normal boot through the Cryptex/dyld cache path, then observe SpringBoard and verify touch input on the Windows host.
